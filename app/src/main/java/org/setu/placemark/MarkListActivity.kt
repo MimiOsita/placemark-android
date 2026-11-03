@@ -1,12 +1,15 @@
 package org.setu.placemark
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.setu.placemark.models.OnMarkListener
 import org.setu.placemark.models.PlacedMark
+import timber.log.Timber
 
 
 class MarkListActivity : AppCompatActivity() {
@@ -25,12 +28,16 @@ class MarkListActivity : AppCompatActivity() {
         adapter = PlacedMarkAdapter(
             marks = AppData.placedMarks.findAll(),
 
-            onEdit = { mark ->
-                editMark(mark)
-            },
+            listener = object : OnMarkListener {
 
-            onDelete = { mark ->
-                deleteMark(mark)
+                override fun onMarkClick(mark: PlacedMark) {
+                    editMark(mark)
+                }
+
+                override fun onMarkLongClick(mark: PlacedMark): Boolean {
+                    showDeleteConfirmationDialog(mark)
+                    return true
+                }
             }
 
         )
@@ -69,13 +76,23 @@ class MarkListActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun deleteMark(mark: PlacedMark) {
+    private fun showDeleteConfirmationDialog(mark: PlacedMark) {
+
+        AlertDialog.Builder(this)
+            .setTitle("Delete this mark?")
+            .setMessage("Are you sure you want to delete ${mark.title}?")
+            .setPositiveButton("Delete") { _, _ ->
+                Timber.i("Deleted mark id=${mark.id}, title=${mark.title}")
+
 
         AppData.placedMarks.delete(mark.id)
 
         adapter.updateMarks(
             AppData.placedMarks.findAll()
         )
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
 }

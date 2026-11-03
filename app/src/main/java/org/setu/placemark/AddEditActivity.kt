@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.setu.placemark.models.PlacedMark
+import timber.log.Timber
 
 class AddEditActivity : AppCompatActivity() {
 
@@ -17,6 +19,7 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var descriptionInput: EditText
     private lateinit var xInput: EditText
     private lateinit var yInput: EditText
+
 
     private var editingId: Long? = null
 
@@ -128,6 +131,8 @@ class AddEditActivity : AppCompatActivity() {
 
             AppData.placedMarks.create(mark)
 
+            Timber.i("Created mark id=${mark.id}, title=${mark.title}")
+
             Toast.makeText(
                 this,
                 "Mark created",
@@ -145,6 +150,8 @@ class AddEditActivity : AppCompatActivity() {
             )
 
             AppData.placedMarks.update(mark)
+
+            Timber.d("Editing mark id=${mark.id}, title=${mark.title}")
 
             Toast.makeText(
                 this,
